@@ -1,2 +1,2 @@
 # sca
-Create environment to write and envoke bash scripts useful
+Create an environment to write and envoke bash scripts useful
