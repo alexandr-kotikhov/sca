@@ -1,2 +1,16 @@
 # sca
-Create an environment to write and envoke bash scripts useful
+
+Create an environment to write and invoke bash scripts usefully.
+
+## Purpose
+
+
+
+## Installation
+
+
+## Usage
+
+
+
+ 
