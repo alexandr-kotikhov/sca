@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare SCA_DIR="${HOME}/sca"
+declare SCA_DIR=$(cd "$(dirname $0)"; pwd)
 
 function _sca_completion() {
   wordlist=$("${SCA_DIR}/sca_runner.sh" COMPLETION "$COMP_CWORD" "${COMP_WORDS[*]}")

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 declare -A sca_commands=()
-declare sca_scripts=()
+declare -a sca_scripts=()
 
 function logErr() {
   echo "$*" >&2
@@ -69,25 +69,24 @@ function scaExec() {
 
 function scaTake() {
   if [ -d "$1/.sca" ]; then
-    readonly files=($(find "$1/.sca" -type f -iname "$2"))
-    for i in ${files[*]}; do
+    while read -r i; do
       local name=$(basename "$i")
-      if [[ ! "$name" =~ $3 ]]; then
+      # skip not a scripts
+      if [[ "$name" =~ ^[[:alnum:]]+$ ]]; then
         sca_scripts+=("$i")
       fi
-    done
+    done <<< $(find "$1/.sca" -type f -iname "$2")
   fi
 }
 
 function scaWalk() {
-  local dir
-  dir=$(pwd)
+  local dir=$(pwd)
   sca_scripts=()
   while [[ ! "${dir}" == "/" && ! "${dir}" == "$HOME" ]]; do
-    scaTake "${dir}" "$1" "$2"
+    scaTake "${dir}" "$1"
     dir=$(dirname "${dir}")
   done
-  scaTake "$HOME" "$1" "$2"
+  scaTake "$HOME" "$1"
 }
 
 
@@ -97,7 +96,7 @@ function scaCompletionWords() {
   declare -a -r COMP_WORDS=($@)
 
   if [ ${COMP_CWORD} -eq 1 ]; then
-    scaWalk "*" "^.+\.sh$"
+    scaWalk "*"
     declare arr=()
     for i in ${sca_scripts[*]}; do
       arr+=("$(basename "$i")")
@@ -105,7 +104,7 @@ function scaCompletionWords() {
     echo -n "${arr[*]}"
 
   elif [ ${COMP_CWORD} -eq 2 ]; then
-    scaWalk "${COMP_WORDS[1]}*" "^.+\.sh$"
+    scaWalk "${COMP_WORDS[1]}*"
     if [ ${#sca_scripts[@]} -eq 1 ]; then
       scaScan "${sca_scripts[0]}"
       echo -n "${!sca_commands[*]}"
