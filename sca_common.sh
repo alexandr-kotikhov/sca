@@ -37,7 +37,11 @@ function scaHelp() {
 
 function scaExec() {
   local op="$1"
-  shift
+  if [ -z "$op" ]; then
+    op="help"
+  else
+    shift
+  fi
 
   local matches=()
   for i in ${!sca_commands[*]}; do
