@@ -7,6 +7,9 @@ function logErr() {
   echo "$*" >&2
 }
 
+# Сканирует sh файл на предмет команд.
+# $1 - имя файла.
+# Создает ассоциативный массив в переменной sca_commands
 function scaScan() {
   local prev
   local cmd
@@ -14,7 +17,7 @@ function scaScan() {
   readonly file="$1"
   while IFS="" read -r line || [ -n "$line" ]; do
     if [[ $line == "function "* ]]; then # start with 'function'
-      cmd=$(echo "$line" | sed -En 's/function\s+cmd_(\w+)\(\).*/\1/p')
+      cmd=$(echo "$line" | sed -En 's/function\s+cmd_([a-zA-Z0-9\-_.]+)\(\).*/\1/p')
       if [[ ! "$cmd" == "" ]]; then
         if [[ "$prev" == "## "* ]]; then
           description="${prev:2}"
@@ -43,12 +46,16 @@ function scaExec() {
     shift
   fi
 
-  local matches=()
-  for i in ${!sca_commands[*]}; do
-    if [[ "$i" == "$op"* ]]; then
-      matches+=("$i")
-    fi
-  done
+  # find strict equality first
+  if [ "${sca_commands[$op]}" != "" ]; then
+    matches+=("$op")
+  else
+    for i in ${!sca_commands[*]}; do
+      if [[ "$i" == "$op"* ]]; then
+        matches+=("$i")
+      fi
+    done
+  fi
 
   if [[ "${#matches[@]}" == "1" ]]; then
     local cmd="cmd_${matches[0]}"
@@ -66,7 +73,7 @@ function scaExec() {
 
   else
     logErr "Возможны несколько команд, уточните."
-    scaHelp "$op"
+    scaHelp ""
 
   fi
 }
