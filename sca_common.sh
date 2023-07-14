@@ -7,9 +7,9 @@ function logErr() {
   echo "$*" >&2
 }
 
-# Сканирует sh файл на предмет команд.
-# $1 - имя файла.
-# Создает ассоциативный массив в переменной sca_commands
+# Scans the sh file for commands.
+# $1 is the name of the file.
+# Creates an associative array in the sca_commands variable
 function scaScan() {
   local prev
   local cmd
@@ -29,12 +29,16 @@ function scaScan() {
     fi
     prev="$line"
   done < "$file"
+  sca_commands['edit-source']="*edit source of the script"
 }
 
 function scaHelp() {
   readonly file_name=$(basename "$1")
   for i in ${!sca_commands[*]}; do
-    printf "%-s %-25s %-60s\n" "${file_name}" $i "${sca_commands["$i"]}"
+    local description="${sca_commands["$i"]}"
+    if [[ ! "$description" == "*"* || -z "$file_name" ]]; then
+      printf "%-s %-25s %-60s\n" "${file_name}" $i "$description"
+    fi
   done
 }
 
@@ -44,6 +48,11 @@ function scaExec() {
     op="help"
   else
     shift
+  fi
+
+  if [ "$op" == "edit-source" ]; then
+    nano "$SCRIPT_DIR/$SCRIPT_FILE_NAME"
+    return
   fi
 
   # find strict equality first
@@ -72,10 +81,10 @@ function scaExec() {
     fi
 
   else
-    logErr "Возможны несколько команд, уточните."
+    logErr "Multiple commands are possible, please specify."
     scaHelp ""
-
   fi
+
 }
 
 function scaTake() {

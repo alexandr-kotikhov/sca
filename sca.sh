@@ -10,8 +10,8 @@ source "${SCA_DIR}/sca_common.sh"
 # $2 - script name
 # it assigns SCRIPT_DIR and SCRIPT_FILE_NAME environment variables
 function execute() {
-  export SCRIPT_DIR=$(dirname "$2")
-  export SCRIPT_FILE_NAME=$(basename "$2")
+  export SCRIPT_DIR="$(dirname "$2")"
+  export SCRIPT_FILE_NAME="$(basename "$2")"
   "$SCA_DIR/sca_runner.sh" "$@"
 }
 

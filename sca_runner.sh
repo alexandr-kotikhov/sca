@@ -3,7 +3,7 @@
 declare SCA_DIR=$(cd "$(dirname $0)"; pwd)
 source "${SCA_DIR}/sca_common.sh"
 
-# данные функции могут быть подменены в подключаемом через 'source' скрипте ниже
+# these functions can be substituted in the script connected via 'source' below
 function run_before() {
   return 0
 }
