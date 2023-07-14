@@ -17,7 +17,7 @@ function scaScan() {
   readonly file="$1"
   while IFS="" read -r line || [ -n "$line" ]; do
     if [[ $line == "function "* ]]; then # start with 'function'
-      cmd=$(echo "$line" | sed -En 's/function\s+cmd_([a-zA-Z0-9\-_.]+)\(\).*/\1/p')
+      cmd=$(echo "$line" | sed -En 's/function\s+cmd_([a-zA-Z0-9_\.\-]+)\(\).*/\1/p')
       if [[ ! "$cmd" == "" ]]; then
         if [[ "$prev" == "## "* ]]; then
           description="${prev:2}"
